@@ -3,37 +3,35 @@ package slcd.boost.boost.Entities;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-
-import java.util.Calendar;
+import jakarta.validation.constraints.NotNull;
 import java.util.Date;
-import java.util.Objects;
-
 @Entity
 public class TypicalGoal {
     @Id
     @GeneratedValue
     private Long id;
-
+    @NotNull
     private String goal;
-
+    @NotNull
     private String critery;
-
+    @NotNull
     private Float currentScore;
-
+    @NotNull
     private String goalForScoreThree;
-
+    @NotNull
     private String goalForScoreFour;
-
+    @NotNull
     private String goalForScoreFive;
-
+    @NotNull
     private Date endDate;
 
     public TypicalGoal() {
     }
 
-    public TypicalGoal(String goal, String critery, String goalForScoreThree, String goalForScoreFour, String goalForScoreFive, Date endDate) {
+    public TypicalGoal(String goal, String critery, Float currentScore, String goalForScoreThree, String goalForScoreFour, String goalForScoreFive, Date endDate) {
         this.goal = goal;
         this.critery = critery;
+        this.currentScore = currentScore;
         this.goalForScoreThree = goalForScoreThree;
         this.goalForScoreFour = goalForScoreFour;
         this.goalForScoreFive = goalForScoreFive;
