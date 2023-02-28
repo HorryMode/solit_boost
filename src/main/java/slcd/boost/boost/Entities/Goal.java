@@ -4,9 +4,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotNull;
+
 import java.util.Date;
+
 @Entity
-public class TypicalGoal {
+public class Goal {
     @Id
     @GeneratedValue
     private Long id;
@@ -23,10 +25,15 @@ public class TypicalGoal {
     @NotNull
     private Date endDate;
 
-    public TypicalGoal() {
+    public Goal() {
     }
 
-    public TypicalGoal(String goal, String critery, String goalForScoreThree, String goalForScoreFour, String goalForScoreFive, Date endDate) {
+    public Goal(String goal,
+                String critery,
+                String goalForScoreThree,
+                String goalForScoreFour,
+                String goalForScoreFive,
+                Date endDate) {
         this.goal = goal;
         this.critery = critery;
         this.goalForScoreThree = goalForScoreThree;

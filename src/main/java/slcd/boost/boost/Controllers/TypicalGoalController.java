@@ -11,7 +11,6 @@ import slcd.boost.boost.Services.TypicalGoalService;
 
 @RestController
 @RequestMapping("/api/v1/TypicalGoal")
-@TypicalGoalExceptionHandler
 public class TypicalGoalController {
 
     @Autowired
