@@ -3,7 +3,7 @@ package slcd.boost.boost;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
-import slcd.boost.boost.Configs.SecurityConfig.SecurityConfig;
+import slcd.boost.boost.SecurityConfig.SecurityConfig;
 
 @SpringBootApplication
 @Import(SecurityConfig.class)
