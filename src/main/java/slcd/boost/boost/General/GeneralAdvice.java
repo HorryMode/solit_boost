@@ -8,6 +8,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import slcd.boost.boost.General.DTOs.ExceptionResponse;
+import slcd.boost.boost.General.Exceptions.OnlyTeamLeaderHaveAccessException;
 
 import java.nio.file.AccessDeniedException;
 import java.util.List;
@@ -48,11 +49,20 @@ public class GeneralAdvice {
     ResponseEntity<ExceptionResponse> handleIllegalArgumentException(IllegalArgumentException e){
         var response = new ExceptionResponse(400, e.getMessage());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-    };
+    }
 
-    @ExceptionHandler(Exception.class)
+
+    @ExceptionHandler(value = OnlyTeamLeaderHaveAccessException.class)
+    public ResponseEntity<ExceptionResponse> handleOnlyTeamLeaderAccess(OnlyTeamLeaderHaveAccessException e){
+
+        var exceptionResponse = new ExceptionResponse(403, Constants.ONLY_TEAM_LEADER_HAVE_ACCESS_MESSAGE);
+        return new ResponseEntity<>(exceptionResponse, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler
     ResponseEntity<ExceptionResponse> handleException(Exception e){
+        e.printStackTrace();
         var response = new ExceptionResponse(500, e.getMessage());
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-    };
+    }
 }

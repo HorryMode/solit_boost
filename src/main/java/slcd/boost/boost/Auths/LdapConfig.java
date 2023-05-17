@@ -7,6 +7,9 @@ import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.ldap.filter.AndFilter;
 import org.springframework.ldap.filter.EqualsFilter;
+import org.springframework.security.ldap.authentication.BindAuthenticator;
+import org.springframework.security.ldap.authentication.ad.ActiveDirectoryLdapAuthenticationProvider;
+import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
 
 @Configuration
 public class LdapConfig {
@@ -22,6 +25,9 @@ public class LdapConfig {
 
     @Value("${ldap.baseDn}")
     private String ldapBaseDn;
+
+    @Value("${ldap.userDnPattern}")
+    private String userDnPattern;
 
     @Bean
     public LdapContextSource contextSource() {
@@ -39,10 +45,19 @@ public class LdapConfig {
     }
 
 
-    public String filterUserDn(String username){
+    public String filterUserDnByUsername(String username){
         return new AndFilter()
                 .and(new EqualsFilter("objectClass","user"))
                 .and(new EqualsFilter("sAMAccountName",username))
+                .and(new EqualsFilter("objectCategory","person"))
+                .and(new EqualsFilter("company","Solit Clouds"))
+                .toString();
+    }
+
+    public String filterUserDnByEmail(String email){
+        return new AndFilter()
+                .and(new EqualsFilter("objectClass","user"))
+                .and(new EqualsFilter("mail", email))
                 .and(new EqualsFilter("objectCategory","person"))
                 .and(new EqualsFilter("company","Solit Clouds"))
                 .toString();

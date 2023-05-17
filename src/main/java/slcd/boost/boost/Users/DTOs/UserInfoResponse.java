@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 public class UserInfoResponse {
     private String name;
     private String birthDate;
-    private String phoneNumber;
     @Email
     private String workMail;
     private String workStartDate;

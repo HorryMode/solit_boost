@@ -2,12 +2,14 @@ package slcd.boost.boost.SecurityConfig;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import slcd.boost.boost.Auths.DTOs.UserDetailsImpl;
@@ -28,10 +30,19 @@ public class JwtUtils {
     public String generateJwtToken(Authentication authentication) {
 
         UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
+        StringBuilder sb = new StringBuilder();
+        Iterator<? extends GrantedAuthority> iterator = userPrincipal.getAuthorities().iterator();
+        while (iterator.hasNext()){
+            GrantedAuthority item = iterator.next();
+            sb.append(item.getAuthority());
+            if(iterator.hasNext())
+                sb.append(",");
+        }
+        String authorities = sb.toString();
+
         Map<String, Object> claims = new HashMap<>();
         claims.put("id", userPrincipal.getId());
-
-        var string = userPrincipal.getUsername();
+        claims.put("authorities", authorities);
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(userPrincipal.getUsername())

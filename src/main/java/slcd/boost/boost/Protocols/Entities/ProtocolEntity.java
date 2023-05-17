@@ -32,6 +32,9 @@ public class ProtocolEntity {
     @JdbcTypeCode(SqlTypes.UUID)
     private UUID uuid;
 
+    @Column(name = "name", nullable = false)
+    private String name;
+
     @ManyToOne
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
     private UserEntity owner;

@@ -2,6 +2,9 @@ package slcd.boost.boost.General;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import slcd.boost.boost.SecurityConfig.JwtUtils;
 import slcd.boost.boost.Users.Entities.TeamLeaderId;
@@ -10,6 +13,8 @@ import slcd.boost.boost.Users.Repos.TeamLeadersRepository;
 import slcd.boost.boost.Users.Repos.UserRepository;
 
 import java.nio.file.AccessDeniedException;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 public class UserAccessCheckService {
@@ -38,6 +43,19 @@ public class UserAccessCheckService {
         }
     }
 
+    public void checkAccess() throws AccessDeniedException {
+        boolean isGrantedAccess = false;
+        if(isTeamLeader())
+            isGrantedAccess = true;
+        if(isSubdivisionHead())
+            isGrantedAccess = true;
+        if(isAdmin())
+            isGrantedAccess = true;
+
+        if (!isGrantedAccess)
+            throw new AccessDeniedException(ACCESS_DENIED_MESSAGE);
+    }
+
     public void checkTeamLeadAccess(Long requestedUserId) throws AccessDeniedException{
         boolean isGrantedAccess = false;
 
@@ -48,14 +66,16 @@ public class UserAccessCheckService {
         if(currentUserId.equals(requestedUserId))
             isGrantedAccess = true;
 
-        UserEntity user = userRepository.findById(requestedUserId).orElseThrow();
-        UserEntity teamLeader = userRepository.findById(currentUserId).orElseThrow();
+        UserEntity requestedUser = userRepository.findById(requestedUserId).orElseThrow();
+        UserEntity currentUser = userRepository.findById(currentUserId).orElseThrow();
 
-        TeamLeaderId teamLeaderId = new TeamLeaderId(user, teamLeader);
+        if(isTeamLeader(requestedUser, currentUser))
+            isGrantedAccess = true;
 
-        //Проверка, есть ли у тимлида доступ
-        if(teamLeadersRepository.existsById(teamLeaderId))
-        if(teamLeadersRepository.existsById(teamLeaderId))
+        if(isAdmin())
+            isGrantedAccess = true;
+
+        if(isSubdivisionHead(requestedUser, currentUser))
             isGrantedAccess = true;
 
         if (!isGrantedAccess)
@@ -66,5 +86,77 @@ public class UserAccessCheckService {
         String authorizationHeader = request.getHeader("Authorization");
         String jwtToken = jwtUtils.parseJwt(authorizationHeader);
         return jwtUtils.getUserIdFromJwtToken(jwtToken);
+    }
+
+    public boolean isAdmin(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        for (GrantedAuthority grantedAuthority : authentication.getAuthorities()) {
+            if (grantedAuthority.toString()
+                    .equals("ROLE_ADMIN"))
+                return true;
+        }
+        return false;
+    }
+
+    public boolean isSubdivisionHead(Long requestedUserId){
+        //Получение id тимлида из jwt токена
+        Long currentUserId = getUserIdFromJwtToken();
+
+        UserEntity requestedUser = userRepository.findById(requestedUserId).orElseThrow();
+        UserEntity currentUser = userRepository.findById(currentUserId).orElseThrow();
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        for (GrantedAuthority grantedAuthority : authentication.getAuthorities()) {
+            if (!grantedAuthority.toString()
+                    .equals("ROLE_DEPARTMENT_HEAD"))
+                continue;
+
+            if (requestedUser.getSubdivision().getUuid()
+                    .equals(currentUser.getSubdivision().getUuid()))
+                return true;
+        }
+        return false;
+    }
+
+    private boolean isSubdivisionHead(UserEntity requestedUser, UserEntity subdivisionHead){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        for (GrantedAuthority grantedAuthority : authentication.getAuthorities()) {
+            if (!grantedAuthority.toString()
+                    .equals("ROLE_DEPARTMENT_HEAD"))
+                continue;
+
+            if (requestedUser.getSubdivision().getUuid()
+                    .equals(subdivisionHead.getSubdivision().getUuid()))
+                return true;
+        }
+        return false;
+    }
+
+    public boolean isTeamLeader(){
+        //Получение id тимлида из jwt токена
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        for (GrantedAuthority grantedAuthority : authentication.getAuthorities()) {
+            if (grantedAuthority.toString()
+                    .equals("ROLE_TEAM_LEADER"))
+                return true;
+        }
+        return false;
+    }
+
+    public boolean isSubdivisionHead(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        for (GrantedAuthority grantedAuthority : authentication.getAuthorities()) {
+            if (grantedAuthority.toString()
+                    .equals("ROLE_DEPARTMENT_HEAD"))
+                return true;
+        }
+        return false;
+    }
+
+    public boolean isTeamLeader(UserEntity requestedUser, UserEntity currentUser){
+        TeamLeaderId teamLeaderId = new TeamLeaderId(requestedUser, currentUser);
+
+        //Проверка, есть ли у тимлида доступ
+        return teamLeadersRepository.existsById(teamLeaderId);
     }
 }

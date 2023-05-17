@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.web.bind.annotation.*;
+import slcd.boost.boost.Auths.DTOs.Credentials;
 import slcd.boost.boost.Auths.DTOs.LoginRequest;
 import slcd.boost.boost.Auths.DTOs.JwtResponse;
 
@@ -16,7 +17,7 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("/signin")
-    public JwtResponse authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-        return authService.authenticateUser(loginRequest);
+    public JwtResponse authenticateUser(@Valid @RequestBody Credentials credentials) {
+        return authService.authenticateUser(credentials);
     }
 }

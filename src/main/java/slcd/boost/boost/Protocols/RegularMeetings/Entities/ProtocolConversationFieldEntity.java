@@ -7,9 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
-import slcd.boost.boost.Protocols.Entities.ProtocolConversationAttachmentEntity;
+import slcd.boost.boost.Protocols.Entities.AttachmentEntity;
 import slcd.boost.boost.Protocols.Entities.ProtocolEntity;
-import slcd.boost.boost.Protocols.RegularMeetings.Enums.EConversationFieldStatus;
 import slcd.boost.boost.Users.Entities.UserEntity;
 
 import java.time.LocalDateTime;
@@ -33,8 +32,6 @@ public class ProtocolConversationFieldEntity {
     @JdbcTypeCode(SqlTypes.UUID)
     private UUID uuid;
 
-    private Long rowNumber;
-
     @ManyToOne
     @JoinColumn(name = "protocol_id", referencedColumnName = "id")
     private ProtocolEntity protocol;
@@ -49,12 +46,11 @@ public class ProtocolConversationFieldEntity {
 
     private String result;
 
-    @Enumerated(EnumType.STRING)
     @Column(length = 30)
-    private EConversationFieldStatus status;
+    private String status;
 
     private LocalDateTime updated;
 
     @OneToMany(mappedBy = "field", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ProtocolConversationAttachmentEntity> attachments = new ArrayList<>();
+    private List<AttachmentEntity> attachments = new ArrayList<>();
 }

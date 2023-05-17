@@ -13,6 +13,10 @@ public final class Constants {
     public static final String RM_ATTACHMENT_NOT_FOUND_MESSAGE = "Протокол о регулярной встрече с id %s не найден";
     public static final String SAVE_FILE_DIRECTORY = "/conversationAttachments";
 
+    public static final String ONLY_TEAM_LEADER_HAVE_ACCESS_MESSAGE = "Только руководитель команды может выполнять данный запрос";
+
+    public static final String RM_PROTOCOL_NAME = "Встреча %s";
+
     //Константы для пользователей
     public static final String USER_NOT_FOUND_MESSAGE = "Пользователь с id %d не найден";
     public static final String PART_TIME_STRING = "Частичная занятость(4ч)";

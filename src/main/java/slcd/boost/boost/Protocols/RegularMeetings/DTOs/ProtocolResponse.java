@@ -17,6 +17,8 @@ public class ProtocolResponse implements IResponse {
 
     private String uuid;
 
+    private String name;
+
     private LocalDateTime created;
 
     private LocalDateTime updated;

@@ -31,7 +31,14 @@ public class FileStorageService{
         }
     }
 
-    public File getFileContent(String uuid, String extension, String directory) throws IOException {
+    public boolean fileDelete(String uuid, String extension, String directory){
+        var filePathString = storageDirectory + directory + "/" + uuid + "." + extension;
+        File file = new File(filePathString);
+
+        return file.delete();
+    }
+
+    public File getFileContent(String uuid, String extension, String directory){
         var filePathString = storageDirectory + directory + "/" + uuid + "." + extension;
         File file = new File(filePathString);
 

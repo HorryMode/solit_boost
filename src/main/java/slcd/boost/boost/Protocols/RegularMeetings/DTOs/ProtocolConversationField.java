@@ -12,6 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 public class ProtocolConversationField {
+
     @NotNull
     private String summary;
 
@@ -21,6 +22,9 @@ public class ProtocolConversationField {
     private Long responsibleUserId;
 
     private String result;
+
+    @NotNull
+    private String status;
 
     @Valid
     private List<FilePayload> attachments;

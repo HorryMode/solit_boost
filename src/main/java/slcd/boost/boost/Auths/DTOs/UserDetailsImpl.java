@@ -12,20 +12,21 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.security.ldap.userdetails.LdapUserDetails;
 import slcd.boost.boost.Users.Entities.UserEntity;
 
-public class UserDetailsImpl implements UserDetails {
+public class UserDetailsImpl implements LdapUserDetails {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    private Long id;
+    private final Long id;
 
-    private String username;
+    private final String username;
 
     @JsonIgnore
-    private String password;
+    private final String password;
 
-    private Collection<? extends GrantedAuthority> authorities;
+    private final Collection<? extends GrantedAuthority> authorities;
 
     public UserDetailsImpl(Long id, String username, String password,
                            Collection<? extends GrantedAuthority> authorities) {
@@ -43,7 +44,7 @@ public class UserDetailsImpl implements UserDetails {
         return new UserDetailsImpl(
                 user.getId(),
                 user.getUsername(),
-                user.getHashedPassword(),
+                null,
                 authorities);
     }
 
@@ -94,5 +95,15 @@ public class UserDetailsImpl implements UserDetails {
             return false;
         UserDetailsImpl user = (UserDetailsImpl) o;
         return Objects.equals(id, user.id);
+    }
+
+    @Override
+    public String getDn() {
+        return null;
+    }
+
+    @Override
+    public void eraseCredentials() {
+        return;
     }
 }

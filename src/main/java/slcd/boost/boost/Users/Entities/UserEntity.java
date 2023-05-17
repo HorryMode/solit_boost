@@ -1,38 +1,35 @@
 package slcd.boost.boost.Users.Entities;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.hibernate.Hibernate;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+import slcd.boost.boost.General.Entities.PostEntity;
+import slcd.boost.boost.General.Entities.SubdivisionEntity;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
-@Table(name = "f_users", uniqueConstraints = {@UniqueConstraint(columnNames = "username")})
+@Table(name = "f_users", uniqueConstraints = {
+        @UniqueConstraint(columnNames = "username")
+})
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@EqualsAndHashCode
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @NotBlank
+    @Column(name = "username")
     private String username;
-
-    @NotBlank
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private String hashedPassword;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(	name = "f_users_roles",
@@ -40,41 +37,48 @@ public class UserEntity {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<RoleEntity> roles = new HashSet<>();
 
+    @JdbcTypeCode(SqlTypes.UUID)
+    @Column(name = "uuid", nullable = false)
+    private UUID uuid;
+
     private String fullName;
 
-    private String lastName;
+    private String firstname;
 
-    private String firstName;
+    private String middlename;
 
-    private String secondName;
+    private String lastname;
 
     private LocalDate birthDay;
 
-    private String phoneNumber;
 
     private String genderCode;
 
     @Email
-    private String workMail;
+    private String email;
 
     private LocalDate workStartDate;
 
-    private String post;
+    @ManyToOne
+    @JoinColumn(name = "subdivision_id", referencedColumnName = "id")
+    private SubdivisionEntity subdivision;
+
+    @ManyToOne
+    @JoinColumn(name = "post_id", referencedColumnName = "id")
+    private PostEntity post;
 
     private String location;
 
-    private String workTypeCode;
+    private String rate;
 
     private LocalDateTime registered;
+    private LocalDateTime updated;
 
     private Boolean archived;
 
     @OneToMany(mappedBy = "user")
     private List<TeamLeadersEntity> teamLeaders;
 
-
-    public UserEntity(String username, String hashedPassword) {
-        this.username = username;
-        this.hashedPassword = hashedPassword;
-    }
+    @OneToMany(mappedBy = "user")
+    private List<UserProductEntity> userProducts;
 }
