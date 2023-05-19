@@ -31,9 +31,6 @@ public class SyncService {
     private InternalApiService internalApiService;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
     private UserService userService;
 
     @Autowired

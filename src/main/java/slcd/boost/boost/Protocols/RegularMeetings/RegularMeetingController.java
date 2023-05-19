@@ -28,34 +28,6 @@ public class RegularMeetingController {
     @Autowired
     private HttpServletResponse response;
 
-    @PostMapping("/protocols")
-    @ResponseStatus(HttpStatus.CREATED)
-    public UUIDResponse createProtocol(
-            @RequestPart(name = "protocol") @Valid String protocolRequest,
-            @RequestPart(name = "files", required = false)List<MultipartFile> files
-    )
-            throws IOException {
-        CreateRegularMeetingProtocolRequest protocol
-                = new ObjectMapper().readValue(protocolRequest, CreateRegularMeetingProtocolRequest.class);
-
-        return (UUIDResponse) regularMeetingService.createProtocol(protocol, files);
-    }
-
-    @PostMapping("/protocols/{uuid}")
-    @ResponseStatus(HttpStatus.CREATED)
-    public UUIDResponse update(
-            @PathVariable String uuid,
-            @RequestPart(name = "protocol") @Valid String protocolRequest,
-            @RequestPart(name = "files", required = false)List<MultipartFile> files
-    )
-            throws IOException {
-
-        UpdateRMProtocolRequest protocol
-                = new ObjectMapper().readValue(protocolRequest, UpdateRMProtocolRequest.class);
-
-        return (UUIDResponse) regularMeetingService.updateProtocol(uuid, protocol, files);
-    }
-
     @GetMapping("/protocols/{protocolUuid}")
     @ResponseStatus(HttpStatus.OK)
     public ProtocolResponse getProtocol(@PathVariable @Valid String protocolUuid) throws AccessDeniedException {
@@ -69,24 +41,6 @@ public class RegularMeetingController {
             Pageable pageable
     ) {
         return regularMeetingService.getProtocols(ownerId, pageable);
-    }
-
-    @PostMapping("/protocols/{uuid}/setStatusOnApproval")
-    @ResponseStatus(HttpStatus.OK)
-    public void setStatusOnApproval(@PathVariable String uuid) throws AccessDeniedException {
-        regularMeetingService.setStatusOnApproval(uuid);
-    }
-
-    @PostMapping("/protocols/{uuid}/setStatusCreated")
-    @ResponseStatus(HttpStatus.OK)
-    public void setStatusCreated(@PathVariable String uuid) throws AccessDeniedException {
-        regularMeetingService.setStatusCreated(uuid);
-    }
-
-    @PostMapping("/protocols/{uuid}/setStatusApproved")
-    @ResponseStatus(HttpStatus.OK)
-    public void setStatusApproved(@PathVariable String uuid) throws AccessDeniedException {
-        regularMeetingService.setStatusApproved(uuid);
     }
 
 

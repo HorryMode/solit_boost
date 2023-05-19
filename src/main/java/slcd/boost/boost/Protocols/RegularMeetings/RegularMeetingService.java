@@ -70,7 +70,7 @@ public class RegularMeetingService implements IProtocolService {
                 = (CreateRegularMeetingProtocolRequest) protocolRequest;
 
         //Список сохраняемых файлов
-        List<MultipartFile> savedFiles = new ArrayList<>();
+        HashMap<String, MultipartFile> savedFiles = new HashMap<>();
 
         //Поиск владельца в бд
         UserEntity owner = userService.findUserById(regularMeetingProtocol.getOwnerId());
@@ -99,6 +99,7 @@ public class RegularMeetingService implements IProtocolService {
             UserEntity responsibleUser = null;
             if(field.getResponsibleUserId() != null) {
                  responsibleUser = userService.findUserById(field.getResponsibleUserId());
+                 userAccessCheckService.checkTeamLeadAccess(responsibleUser.getId());
             }
 
             //Формирование сущности поля протокола
@@ -138,7 +139,7 @@ public class RegularMeetingService implements IProtocolService {
                 fileStorageService.checkFileSize(file);
 
                 attachmentEntities.add(attachmentEntity);
-                savedFiles.add(file);
+                savedFiles.put(fileUuid.toString(), file);
             }
 
             fieldEntity.setAttachments(attachmentEntities);
@@ -150,14 +151,16 @@ public class RegularMeetingService implements IProtocolService {
         protocolRepository.save(protocolEntity);
 
         //Сохранение файлов
-        for(MultipartFile file : savedFiles){
-            String extension = Objects.requireNonNull(file.getOriginalFilename());
-
-            //Сохранение файла в локальном хранилище
-            fileStorageService.saveFile(file,
-                    FilePayload.parseExtension(extension),
-                    Constants.SAVE_FILE_DIRECTORY);
-        }
+        savedFiles.forEach(
+                ((uuid, file) -> {
+                    //Сохранение файла в локальном хранилище
+                    try {
+                        fileStorageService.saveFile(file, uuid);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+        );
 
         return new UUIDResponse(protocolUuid.toString());
     }
@@ -214,8 +217,7 @@ public class RegularMeetingService implements IProtocolService {
                                 iterator.remove();
                                 fileStorageService.fileDelete(
                                         attachmentEntity.getUuid().toString(),
-                                        attachmentEntity.getExtension(),
-                                        Constants.SAVE_FILE_DIRECTORY
+                                        attachmentEntity.getExtension()
                                 );
                             } else {
                                 attachmentsMap.remove(attachmentUuid);
@@ -413,7 +415,7 @@ public class RegularMeetingService implements IProtocolService {
 
         //Получение файла из локального хранилища
         File file = fileStorageService
-                .getFileContent(attachmentUuid, attachment.getExtension(),Constants.SAVE_FILE_DIRECTORY);
+                .getFileContent(attachmentUuid, attachment.getExtension());
 
         //Формирование ответа
         var fileDownloadPayload = new FileDownloadPayload();

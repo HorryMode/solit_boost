@@ -2,6 +2,7 @@ package slcd.boost.boost.Auths;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import slcd.boost.boost.Auths.Exceptions.BadCredentialsException;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -41,7 +42,7 @@ public class AesService {
                  InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
 
             e.printStackTrace();
-            throw new RuntimeException(e);
+            throw new BadCredentialsException("Переданны некорректные данные");
         }
     }
 

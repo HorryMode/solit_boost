@@ -21,7 +21,6 @@ import java.util.*;
 @AllArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

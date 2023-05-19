@@ -36,14 +36,17 @@ public class ProtocolConversationFieldEntity {
     @JoinColumn(name = "protocol_id", referencedColumnName = "id")
     private ProtocolEntity protocol;
 
+    @Column(name = "summary", columnDefinition = "text")
     private String summary;
 
+    @Column(name = "description", columnDefinition = "text")
     private String description;
 
     @ManyToOne
     @JoinColumn(name = "responsible_id", referencedColumnName = "id")
     private UserEntity responsible;
 
+    @Column(name = "result", columnDefinition = "text")
     private String result;
 
     @Column(length = 30)

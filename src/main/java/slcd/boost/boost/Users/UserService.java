@@ -53,9 +53,6 @@ public class UserService {
     private UserRepository userRepository;
 
     @Autowired
-    private HttpServletRequest request;
-
-    @Autowired
     private UserAccessCheckService userAccessCheckService;
 
     @Autowired
@@ -72,8 +69,6 @@ public class UserService {
 
     @Autowired
     private LdapService ldapService;
-    @Autowired
-    private AdUserInfoEntityRepository adUserInfoEntityRepository;
     @Autowired
     private UserProductRepository userProductRepository;
     @Autowired

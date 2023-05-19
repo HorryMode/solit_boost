@@ -3,15 +3,16 @@ package slcd.boost.boost.General;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import slcd.boost.boost.General.Exceptions.ResourceAlreadyExistsException;
+import slcd.boost.boost.Protocols.RegularMeetings.DTOs.FilePayload;
 
 import java.io.*;
 
 @Service
 public class FileStorageService{
-    private final String storageDirectory = System.getProperty("user.dir") + "/../storage";
+    private final String storageDirectory = System.getProperty("user.dir") + "storage";
 
-    public void saveFile(MultipartFile file, String extension, String directory) throws IOException {
-        String directoryString = storageDirectory + directory;
+    public void saveFile(MultipartFile file, String uuid) throws IOException {
+        String directoryString = storageDirectory;
         File directoryFile = new File(directoryString);
         if(!directoryFile.exists())
             directoryFile.mkdirs();
@@ -19,9 +20,13 @@ public class FileStorageService{
         File outputFile = new File(
                         directoryString
                                 .concat("/")
-                                .concat(file.getName())
+                                .concat(uuid)
                                 .concat(".")
-                                .concat(extension)
+                                .concat(
+                                        FilePayload.parseExtension(
+                                                file.getOriginalFilename()
+                                        )
+                                )
         );
 
         byte [] content = file.getBytes();
@@ -31,15 +36,15 @@ public class FileStorageService{
         }
     }
 
-    public boolean fileDelete(String uuid, String extension, String directory){
-        var filePathString = storageDirectory + directory + "/" + uuid + "." + extension;
+    public boolean fileDelete(String uuid, String extension){
+        var filePathString = storageDirectory + "/" + uuid + "." + extension;
         File file = new File(filePathString);
 
         return file.delete();
     }
 
-    public File getFileContent(String uuid, String extension, String directory){
-        var filePathString = storageDirectory + directory + "/" + uuid + "." + extension;
+    public File getFileContent(String uuid, String extension){
+        var filePathString = storageDirectory + "/" + uuid + "." + extension;
         File file = new File(filePathString);
 
         return file;
@@ -53,8 +58,8 @@ public class FileStorageService{
         }
     }
 
-    public void isFileExists(String fileName, String directory){
-        File file = new File(storageDirectory + directory + "/" + fileName);
+    public void isFileExists(String fileName){
+        File file = new File(storageDirectory + "/" + fileName);
         if(file.exists())
             throw new ResourceAlreadyExistsException("ааа");
     }

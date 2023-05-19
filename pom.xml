@@ -9,12 +9,12 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>slcd.boost</groupId>
-	<artifactId>skill.over</artifactId>
+	<artifactId>skill.over.mobile</artifactId>
 	<version>1.0.0</version>
 	<name>boost</name>
 	<description>TestProject of product SkillOver</description>
 	<properties>
-		<java.version>19</java.version>
+		<java.version>17</java.version>
 	</properties>
 	<dependencies>
 		<dependency>

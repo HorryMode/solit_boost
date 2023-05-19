@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import slcd.boost.boost.Auths.DTOs.Credentials;
 import slcd.boost.boost.Auths.DTOs.LoginRequest;
 import slcd.boost.boost.Auths.DTOs.JwtResponse;
+import slcd.boost.boost.General.ControllerScanner;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -15,7 +16,6 @@ public class AuthController {
 
     @Autowired
     private AuthService authService;
-
     @PostMapping("/signin")
     public JwtResponse authenticateUser(@Valid @RequestBody Credentials credentials) {
         return authService.authenticateUser(credentials);
