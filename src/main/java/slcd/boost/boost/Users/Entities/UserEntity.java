@@ -80,4 +80,11 @@ public class UserEntity {
 
     @OneToMany(mappedBy = "user")
     private List<UserProductEntity> userProducts;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof UserEntity that)) return false;
+        return Objects.equals(username, that.username) && Objects.equals(uuid, that.uuid) && Objects.equals(fullName, that.fullName) && Objects.equals(firstname, that.firstname) && Objects.equals(middlename, that.middlename) && Objects.equals(lastname, that.lastname) && Objects.equals(birthDay, that.birthDay) && Objects.equals(genderCode, that.genderCode) && Objects.equals(email, that.email) && Objects.equals(workStartDate, that.workStartDate) && Objects.equals(subdivision, that.subdivision) && Objects.equals(post, that.post) && Objects.equals(location, that.location) && Objects.equals(rate, that.rate) && Objects.equals(registered, that.registered) && Objects.equals(updated, that.updated) && Objects.equals(archived, that.archived) && Objects.equals(userProducts, that.userProducts);
+    }
 }

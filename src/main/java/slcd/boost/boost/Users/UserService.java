@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import slcd.boost.boost.Auths.DTOs.LdapInfoDTO;
+import slcd.boost.boost.Auths.DTOs.ProfileResponse;
 import slcd.boost.boost.Auths.LdapService;
 import slcd.boost.boost.Auths.Repos.AdUserInfoEntityRepository;
 import slcd.boost.boost.General.Entities.PostEntity;
@@ -450,7 +451,7 @@ public class UserService {
             //Заполнение параметров почта, тип занятости, локация и признака архивности
             user.setEmail(internalUserInfo.getEmail());
             user.setRate(internalUserInfo.getRate());
-            user.setLocation(internalUserInfo.getRate());
+            user.setLocation(internalUserInfo.getLocation());
             user.setArchived(false);
 
             //Сохранение сущности в таблице f_users
@@ -505,7 +506,6 @@ public class UserService {
         UserEntity user = findUserByUUID(
                 UUID.fromString(internalUserInfo.getId())
         );
-        LdapInfoDTO ldapInfoDTO = ldapService.findByEmail(internalUserInfo.getEmail());
 
         //Проверка ФИО
         if(!Objects.equals(
@@ -631,11 +631,11 @@ public class UserService {
                 }
         );
 
-        if(user.equals(
+        if(!user.equals(
                 findUserByUUID(UUID.fromString(internalUserInfo.getId()))
         )){
             user.setUpdated(LocalDateTime.now());
-            userRepository.save(user);
+            UserEntity newUser = userRepository.save(user);
         }
     }
 
@@ -662,5 +662,13 @@ public class UserService {
             );
             return products;
         }
+    }
+
+    public ProfileResponse findShortUserInfoById() {
+        UserEntity userEntity = findUserById(
+                userAccessCheckService.getUserIdFromJwtToken()
+        );
+
+        return ProfileResponse.mapFromEntity(userEntity);
     }
 }

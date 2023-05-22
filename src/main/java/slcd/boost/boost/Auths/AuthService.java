@@ -2,6 +2,7 @@ package slcd.boost.boost.Auths;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -10,7 +11,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import slcd.boost.boost.Auths.DTOs.*;
+import slcd.boost.boost.Auths.Entities.RefreshSessionEntity;
 import slcd.boost.boost.SecurityConfig.JwtUtils;
+import slcd.boost.boost.Users.Entities.UserEntity;
+import slcd.boost.boost.Users.UserService;
 
 @Service
 public class AuthService {
@@ -22,9 +26,18 @@ public class AuthService {
     private JwtUtils jwtUtils;
 
     @Autowired
+    private HttpServletRequest request;
+
+    @Autowired
     private AesService aesService;
 
-    public JwtResponse authenticateUser(@RequestBody Credentials credentials) {
+    @Autowired
+    private RefreshSessionService refreshSessionService;
+
+    @Autowired
+    private UserService userService;
+
+    public JwtResponse authenticateUser(String fingerprint, Credentials credentials) {
 
         LoginRequest loginRequest = mapToLoginRequest(credentials);
 
@@ -41,10 +54,38 @@ public class AuthService {
         //Формирование информации о пользователе для системы
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
-        return new JwtResponse(jwt);
+        //Формирование нового рефреш-токена
+        UserEntity user = userService.findUserById(userDetails.getId());
+        String refreshToken = refreshSessionService.generateRefreshToken(
+                fingerprint,
+                user
+        );
+
+        return new JwtResponse(jwt, refreshToken);
     }
 
-    private LoginRequest mapToLoginRequest(Credentials credentials){
+    public JwtResponse refreshUser(String fingerprint, String refreshToken) {
+        UserEntity user = refreshSessionService
+                .validateRefreshToken(fingerprint, refreshToken);
+
+        UserDetailsImpl userDetails = UserDetailsImpl.build(user);
+        Authentication authentication =
+                new UsernamePasswordAuthenticationToken(
+                        userDetails,
+                        null,
+                        userDetails.getAuthorities()
+                );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String jwt = jwtUtils.generateJwtToken(authentication);
+        String newRefreshToken = refreshSessionService.generateRefreshToken(
+                fingerprint,
+                user
+        );
+
+        return new JwtResponse(jwt, newRefreshToken);
+    }
+
+    private LoginRequest mapToLoginRequest(Credentials credentials) {
         try {
             String decodedString = aesService.decrypt(
                     credentials.getCredentials()
@@ -52,7 +93,7 @@ public class AuthService {
 
             ObjectMapper objectMapper = new ObjectMapper();
             return objectMapper.readValue(decodedString, LoginRequest.class);
-        } catch (JsonProcessingException e){
+        } catch (JsonProcessingException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
         }

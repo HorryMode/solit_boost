@@ -39,15 +39,7 @@ public class SyncService {
     @Autowired
     private ProductService productService;
 
-    private final static String CRON = "0 0 3 * * ?";
     private final static Logger LOGGER = LoggerFactory.getLogger(SyncService.class);
-
-    @Scheduled(cron = CRON)
-    public void syncSystem(){
-        syncPosts();
-        syncProducts();
-        syncUsersWithInternal();
-    }
 
     public boolean syncUsersWithInternal(){
         try {

@@ -18,7 +18,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping("/{id}/products")
+    @GetMapping("/{id}/products")
     @ResponseStatus(HttpStatus.OK)
     public List<UserProductResponse> getUserProducts(@Valid @PathVariable(name = "id") Long id)
             throws AccessDeniedException{

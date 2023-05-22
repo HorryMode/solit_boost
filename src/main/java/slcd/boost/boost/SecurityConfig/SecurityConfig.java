@@ -60,6 +60,7 @@ public class SecurityConfig{
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests()
                 .requestMatchers("/api/v1/auth/signin").permitAll()
+                .requestMatchers("/api/v1/auth/refresh").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .requiresChannel().anyRequest().requiresSecure()

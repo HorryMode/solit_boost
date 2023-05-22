@@ -38,8 +38,7 @@ public class AesService {
             byte[] decryptedData = cipher.doFinal(decodedData);
             return new String (decryptedData, StandardCharsets.UTF_8);
 
-        } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidAlgorithmParameterException |
-                 InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
+        } catch (Exception e) {
 
             e.printStackTrace();
             throw new BadCredentialsException("Переданны некорректные данные");

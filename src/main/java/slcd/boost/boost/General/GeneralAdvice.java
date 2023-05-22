@@ -47,6 +47,7 @@ public class GeneralAdvice {
 
     @ExceptionHandler(IllegalArgumentException.class)
     ResponseEntity<ExceptionResponse> handleIllegalArgumentException(IllegalArgumentException e){
+        e.printStackTrace();
         var response = new ExceptionResponse(400, e.getMessage());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
@@ -54,7 +55,7 @@ public class GeneralAdvice {
 
     @ExceptionHandler(value = OnlyTeamLeaderHaveAccessException.class)
     public ResponseEntity<ExceptionResponse> handleOnlyTeamLeaderAccess(OnlyTeamLeaderHaveAccessException e){
-
+        e.printStackTrace();
         var exceptionResponse = new ExceptionResponse(403, Constants.ONLY_TEAM_LEADER_HAVE_ACCESS_MESSAGE);
         return new ResponseEntity<>(exceptionResponse, HttpStatus.FORBIDDEN);
     }

@@ -6,7 +6,7 @@ VOLUME /tmp
 
 VOLUME /home/dkoshkin/storage:/storage
 
-EXPOSE 8080
+EXPOSE 8089
 
 ENV SPRING_PROFILES_ACTIVE=test
 

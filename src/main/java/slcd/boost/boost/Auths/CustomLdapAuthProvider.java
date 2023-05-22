@@ -50,7 +50,7 @@ public class CustomLdapAuthProvider implements AuthenticationProvider {
         );
 
         // Возвращаем объект аутентификации
-        return new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
+        return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
 
     @Override

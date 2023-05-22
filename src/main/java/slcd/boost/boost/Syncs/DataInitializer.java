@@ -45,8 +45,6 @@ public class DataInitializer implements CommandLineRunner {
             }
         }
 
-        syncService.syncUsersWithInternal();
-
         System.out.println(aesService.encrypt(
                 "{\"username\": \"dkoshkin\", \"password\":\"KGf9QS99QS\"}"
         ));
